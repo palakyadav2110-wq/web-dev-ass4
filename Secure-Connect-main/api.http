@@ -1,0 +1,66 @@
+@baseUrl = http://localhost:5000
+
+### 1. Signup
+POST {{baseUrl}}/api/auth/signup
+Content-Type: application/json
+
+{
+  "username": "victor",
+  "email": "victor@example.com",
+  "password": "123456"
+}
+
+### 2. Login (token yahan se save hota hai)
+# @name login
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "victor@example.com",
+  "password": "123456"
+}
+
+### Token variable (login ke baad apne aap bharta hai)
+@token = {{login.response.body.token}}
+
+### 3. Notes WITHOUT token -> 403 "No token provided"
+GET {{baseUrl}}/api/notes
+
+### 4. Create note (201)
+POST {{baseUrl}}/api/notes
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "title": "My First Note",
+  "content": "This is my first note of web dev -III"
+}
+
+### 5. Get all notes (200)
+GET {{baseUrl}}/api/notes
+Authorization: Bearer {{token}}
+
+### 6. Get one note (id apni note se replace karo)
+GET {{baseUrl}}/api/notes/PASTE_NOTE_ID
+Authorization: Bearer {{token}}
+
+### 7. Update note
+PUT {{baseUrl}}/api/notes/PASTE_NOTE_ID
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "title": "Updated title"
+}
+
+### 8. Delete note
+DELETE {{baseUrl}}/api/notes/PASTE_NOTE_ID
+Authorization: Bearer {{token}}
+
+### 9. Current user (protected)
+GET {{baseUrl}}/api/auth/me
+Authorization: Bearer {{token}}
+
+### 10. Admin only route (normal user ko 403 milega)
+GET {{baseUrl}}/api/auth/users
+Authorization: Bearer {{token}}

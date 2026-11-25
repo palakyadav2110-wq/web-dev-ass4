@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>Secure Chat</title>
+<style>body{font-family:sans-serif;max-width:600px;margin:2rem auto}#log{border:1px solid #ccc;height:300px;overflow:auto;padding:8px;margin:8px 0}input{padding:6px}.sys{color:#888}</style></head>
+<body>
+<h2>Real-time chat (Socket.IO)</h2>
+<input id="token" size="50" placeholder="Paste JWT from /api/auth/login"> <button id="connect">Connect</button>
+<div id="log"></div>
+<input id="msg" size="50" placeholder="Type a message"> <button id="send">Send</button>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+let socket; const log=document.getElementById('log');
+const add=(t,c)=>{const d=document.createElement('div');d.textContent=t;if(c)d.className=c;log.appendChild(d);log.scrollTop=log.scrollHeight};
+document.getElementById('connect').onclick=()=>{
+  socket=io({auth:{token:document.getElementById('token').value.trim()}});
+  socket.on('connect',()=>add('Connected','sys'));
+  socket.on('connect_error',e=>add('Error: '+e.message,'sys'));
+  socket.on('system',t=>add(t,'sys'));
+  socket.on('chat message',m=>add(`${m.user}: ${m.text}`));
+};
+const send=()=>{const i=document.getElementById('msg');if(socket&&i.value){socket.emit('chat message',i.value);i.value=''}};
+document.getElementById('send').onclick=send;
+document.getElementById('msg').onkeydown=e=>{if(e.key==='Enter')send()};
+</script></body></html>
